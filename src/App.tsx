@@ -1,7 +1,9 @@
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
-import {  useAccount, useConnect, useDisconnect, WagmiProvider } from 'wagmi'
+import {   useConnection, WagmiProvider } from 'wagmi'
 import { config } from "./config"
 import './App.css'
+import { Account } from './account';
+import { WalletOptions } from './wallet-option';
 
 const client = new QueryClient();
 
@@ -12,28 +14,20 @@ function App() {
     <>
     <WagmiProvider config={config}>
       <QueryClientProvider client={client}>
-        <WalletOptions></WalletOptions>
+        <ConnectWallet/>
       </QueryClientProvider>
     </WagmiProvider>
     </>
   )
 }
 
-export function WalletOptions() {
-  const { connectors, connect } = useConnect()
-  const { address } = useAccount()
-  const {disconnect}  = useDisconnect()
-  if(address){
-    <div>
-      you are connected {address}
-      <button onClick={()=> {disconnect()}}>disconnect</button>
-    </div>
-  }
-   return connectors.map((connector) => (
-    <button key={connector.uid} onClick={() => connect({ connector })}>
-      {connector.name}
-    </button>
-  ))
+function ConnectWallet (){
+
+  const { isConnected } = useConnection()
+
+  if(isConnected) return <Account/>
+  return <WalletOptions/>
 }
+
 
 export default App
